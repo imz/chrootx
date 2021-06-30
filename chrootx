@@ -1,0 +1,24 @@
+#!/bin/sh -efuC
+set -o pipefail
+
+# Helper to run X clients more easily from inside chroot.
+
+find_first_nonopt()
+{
+	while :; do
+		case "$1" in
+			--) shift
+				;;
+			-*) continue
+				;;
+		esac
+		readonly FIRST_NONOPT="$1"
+		return
+	done
+}
+
+find_first_nonopt "$@"
+
+cp -v "$XAUTHORITY" -T "$FIRST_NONOPT$XAUTHORITY"
+
+exec chroot "$@"
